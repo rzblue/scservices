@@ -7,6 +7,8 @@
 #endif
 #include <stdio.h>
 
+#include <memory>
+
 #include "version.h"
 
 #include <wpi/net/EventLoopRunner.hpp>

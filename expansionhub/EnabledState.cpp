@@ -14,7 +14,7 @@
 
 namespace eh {
 
-EnabledState::~EnabledState() {
+EnabledState::~EnabledState() noexcept{
     if (fd == -1) {
         return;
     }

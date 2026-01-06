@@ -4,6 +4,9 @@
 
 #include "MotorNtState.h"
 
+#include <string>
+#include <utility>
+
 #include "wpi/nt/NetworkTableInstance.hpp"
 
 #define PERCENTAGE_MODE 0

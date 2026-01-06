@@ -4,6 +4,10 @@
 
 #include "ExpansionHubSerial.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "stdio.h"
 
 #include "wpi/util/timestamp.h"
@@ -62,7 +66,8 @@ static constexpr uint8_t PacketSourceAddress(std::span<const uint8_t> buffer) {
 }
 
 static constexpr uint16_t PacketId(std::span<const uint8_t> buffer) {
-    return ((uint16_t)(buffer[9]) << 8 | (uint16_t)(buffer[8]));
+    return (static_cast<uint16_t>(buffer[9]) << 8 |
+            static_cast<uint16_t>(buffer[8]));
 }
 
 static constexpr std::span<const uint8_t> PacketPayloadBuffer(
@@ -253,7 +258,7 @@ void ExpansionHubSerial::SendMotorConstantPower(uint8_t channel, double power) {
 
     uint16_t packetId = *packetInterfaceId + 15;
 
-    int16_t adjustedPowerLevel = (int16_t)(power * POWER_CONVERSION);
+    int16_t adjustedPowerLevel = static_cast<int16_t>(power * POWER_CONVERSION);
 
     uint8_t buffer[3] = {channel, (uint8_t)(adjustedPowerLevel),
                          (uint8_t)(adjustedPowerLevel >> 8)};

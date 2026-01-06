@@ -7,6 +7,10 @@
 #endif
 #include <stdio.h>
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "version.h"
 
 #include <linux/can.h>
@@ -144,7 +148,7 @@ void ExpansionHubState::SendCommands(bool canEnable, bool deviceReset) {
         if (motorPowers[i].second < 0) {
             currentHub->SendMotorConstantPower(i, motorPowers[i].first);
         } else if (motorPowers[i].second < 4) {
-            // TODO, determine if a follower is following a follower, and what
+            // TODO determine if a follower is following a follower, and what
             // to do
             currentHub->SendMotorConstantPower(
                 i, motorPowers[motorPowers[i].second].first);

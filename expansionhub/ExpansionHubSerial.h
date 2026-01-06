@@ -4,13 +4,17 @@
 
 #pragma once
 
+#include <deque>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "wpi/net/uv/Loop.hpp"
 #include "wpi/net/uv/Poll.hpp"
 #include "functional"
 #include "ExpansionHubNtState.h"
 #include "MessageNumbers.h"
 #include "ReceiveStateMachine.h"
-#include <deque>
 
 namespace eh {
 

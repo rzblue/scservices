@@ -4,6 +4,8 @@
 
 #include "ServoNtState.h"
 
+#include <string>
+
 #include "wpi/nt/NetworkTableInstance.hpp"
 
 using namespace eh;

@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <span>
+#include <utility>
 #include <vector>
 
 namespace eh {
@@ -54,8 +55,9 @@ class ReceiveStateMachine {
                         _crc += value;
                     }
                     if (canCopy == numNeeded) {
-                        uint16_t packetLength = ((uint16_t)(_storage[3]) << 8 |
-                                                 (uint16_t)(_storage[2]));
+                        uint16_t packetLength =
+                            (static_cast<uint16_t>(_storage[3]) << 8 |
+                             static_cast<uint16_t>(_storage[2]));
                         if (packetLength < 11 || packetLength > 1024) {
                             _storage.clear();
                             _crc = 0;
