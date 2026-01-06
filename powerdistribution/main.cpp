@@ -169,17 +169,8 @@ bool CanState::startUvLoop(unsigned bus, const wpi::nt::NetworkTableInstance& nt
             int rVal = read(fd, &frame, sizeof(frame));
 
             if (rVal != CAN_MTU && rVal != CANFD_MTU) {
-                // TODO Error handling, do we need to reopen the socket?
+                // This should not happen. If it does, nothing we can do.
                 return;
-            }
-
-            if (frame.can_id & CAN_ERR_FLAG) {
-                // Do nothing if this is an error frame
-                return;
-            }
-
-            if (rVal == CANFD_MTU) {
-                frame.flags = CANFD_FDF;
             }
 
             handleCanFrame(frame);
