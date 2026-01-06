@@ -140,10 +140,20 @@ void ExpansionHubState::SendCommands(bool canEnable, bool deviceReset) {
         if (motorPowers[i].second < 0) {
             currentHub->SendMotorConstantPower(i, motorPowers[i].first);
         } else if (motorPowers[i].second < 4) {
-            // TODO, determine if a follower is following a follower, and what
-            // to do
-            currentHub->SendMotorConstantPower(
-                i, motorPowers[motorPowers[i].second].first);
+            // Follow the chain of followers to find the leader motor.
+            // If there is a loop, this will just stop at NUM_MOTORS_PER_HUB.
+            // ComputeMotorPower will never return a nonzero power if a follower is set, so this should be safe.
+            // (maybe we should detect cycles?) 
+            int currentLeader = motorPowers[i].second;
+            for (int depth = 0; depth < NUM_MOTORS_PER_HUB; depth++) {
+                int nextLeader = motorPowers[currentLeader].second;
+                if (nextLeader < 0) {
+                    // Current motor is the leader (not following anyone)
+                    break;
+                }
+                currentLeader = nextLeader;
+            }
+            currentHub->SendMotorConstantPower(i, motorPowers[currentLeader].first);
         } else {
             currentHub->SendMotorConstantPower(i, 0.0);
         }
