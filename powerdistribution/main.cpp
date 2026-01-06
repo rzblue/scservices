@@ -1,3 +1,7 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 #if defined(__linux__) && defined(MRC_DAEMON_BUILD)
 #include <signal.h>
 #endif
@@ -95,7 +99,8 @@ void CanState::handlePowerFrame(const canfd_frame& frame) {
     framePublishers[frameNum].Set(frameSpan);
 }
 
-bool CanState::startUvLoop(unsigned bus, const wpi::nt::NetworkTableInstance& ntInst,
+bool CanState::startUvLoop(unsigned bus,
+                           const wpi::nt::NetworkTableInstance& ntInst,
                            wpi::net::uv::Loop& loop) {
     if (bus >= NUM_CAN_BUSES) {
         return false;
@@ -131,7 +136,7 @@ bool CanState::startUvLoop(unsigned bus, const wpi::nt::NetworkTableInstance& nt
     // Both mfg types have the "4" bit set. They just
     // differ on the 1 bit. So a single filter can be used,
     // ignoring that bit.
-    struct can_filter filter {
+    struct can_filter filter{
         .can_id = 0x08040000 | CAN_EFF_FLAG,
         .can_mask = 0x1FFE0000 | CAN_EFF_FLAG,
     };

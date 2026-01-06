@@ -49,20 +49,43 @@ endif()
 
 string(TIMESTAMP BUILD_CURRENT_TIMESTAMP UTC)
 
-if (MSVC)
-    if ("${CMAKE_C_COMPILER_VERSION}" VERSION_GREATER_EQUAL "19.20")
+if(MSVC)
+    if("${CMAKE_C_COMPILER_VERSION}" VERSION_GREATER_EQUAL "19.20")
         include(${PROJECT_SOURCE_DIR}/cmake/SourceLink.cmake)
-        file(TO_NATIVE_PATH "${PROJECT_BINARY_DIR}/source_link.json" SOURCE_LINK_JSON)
-        file(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/cmake/source_link.json.in" SOURCE_LINK_JSON_INPUT)
+        file(
+            TO_NATIVE_PATH
+            "${PROJECT_BINARY_DIR}/source_link.json"
+            SOURCE_LINK_JSON
+        )
+        file(
+            TO_NATIVE_PATH
+            "${PROJECT_SOURCE_DIR}/cmake/source_link.json.in"
+            SOURCE_LINK_JSON_INPUT
+        )
         source_link(${PROJECT_SOURCE_DIR} ${SOURCE_LINK_JSON} ${SOURCE_LINK_JSON_INPUT})
-        set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /INCREMENTAL:NO")
-        set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} /INCREMENTAL:NO")
-        set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} /INCREMENTAL:NO")
-        set(CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO} /INCREMENTAL:NO")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /FORCE:PGOREPRO /SOURCELINK:\"${SOURCE_LINK_JSON}\"")
-        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /FORCE:PGOREPRO /SOURCELINK:\"${SOURCE_LINK_JSON}\"")
+        set(CMAKE_EXE_LINKER_FLAGS_DEBUG
+            "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /INCREMENTAL:NO"
+        )
+        set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO
+            "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} /INCREMENTAL:NO"
+        )
+        set(CMAKE_SHARED_LINKER_FLAGS_DEBUG
+            "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} /INCREMENTAL:NO"
+        )
+        set(CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO
+            "${CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO} /INCREMENTAL:NO"
+        )
+        set(CMAKE_EXE_LINKER_FLAGS
+            "${CMAKE_EXE_LINKER_FLAGS} /FORCE:PGOREPRO /SOURCELINK:\"${SOURCE_LINK_JSON}\""
+        )
+        set(CMAKE_SHARED_LINKER_FLAGS
+            "${CMAKE_SHARED_LINKER_FLAGS} /FORCE:PGOREPRO /SOURCELINK:\"${SOURCE_LINK_JSON}\""
+        )
     else()
-        message(WARNING "Disabling SourceLink due to old version of MSVC. Please update to VS2019 or greater!")
+        message(
+            WARNING
+            "Disabling SourceLink due to old version of MSVC. Please update to VS2019 or greater!"
+        )
     endif()
 endif()
 
@@ -70,17 +93,18 @@ add_subdirectory(allwpilib EXCLUDE_FROM_ALL)
 
 set(BUILD_SHARED_LIBS OFF)
 
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
 
-Include(FetchContent)
+include(FetchContent)
 
 FetchContent_Declare(
-  Catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.7.1 # or a later release
+    Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG
+        v3.7.1 # or a later release
 )
 
 FetchContent_MakeAvailable(Catch2)
@@ -92,24 +116,23 @@ add_subdirectory(common)
 
 add_subdirectory(radio)
 
-if (MRC_BUILD)
-add_subdirectory(powerdistribution)
-add_subdirectory(expansionhub)
+if(MRC_BUILD)
+    add_subdirectory(powerdistribution)
+    add_subdirectory(expansionhub)
 endif()
 
-if (MRC_BUILD)
-install(
-    TARGETS RadioDaemon PowerDistributionDaemon ExpansionHubDaemon
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-)
-
+if(MRC_BUILD)
+    install(
+        TARGETS RadioDaemon PowerDistributionDaemon ExpansionHubDaemon
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+    )
 else()
-install(
-    TARGETS RadioDaemon
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-)
+    install(
+        TARGETS RadioDaemon
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+    )
 endif()

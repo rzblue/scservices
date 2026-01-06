@@ -1,3 +1,7 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 #pragma once
 
 #include <array>
@@ -29,7 +33,8 @@ struct ExpansionHubNtState {
     uint64_t numCrcFailures{0};
     uint64_t numMissedSendLoops{0};
 
-    void Initialize(const wpi::nt::NetworkTableInstance& instance, int deviceNum);
+    void Initialize(const wpi::nt::NetworkTableInstance& instance,
+                    int deviceNum);
 };
 
 }  // namespace eh

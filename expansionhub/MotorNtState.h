@@ -1,3 +1,7 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 #pragma once
 
 #include "wpi/nt/BooleanTopic.hpp"
@@ -33,7 +37,8 @@ struct MotorNtState {
     int64_t lastResetTime{0};
 
     void Initialize(const wpi::nt::NetworkTableInstance& instance, int motorNum,
-                    const std::string& busIdStr, wpi::nt::PubSubOptions options);
+                    const std::string& busIdStr,
+                    wpi::nt::PubSubOptions options);
 
     double lastEncoderPosition{0};
     double lastEncoderVelocity{0};

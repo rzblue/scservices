@@ -1,3 +1,7 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 #pragma once
 
 #include "systemd/sd-device.h"
@@ -16,8 +20,9 @@ namespace eh {
 
 class SystemDUsbMonitor {
    public:
-    SystemDUsbMonitor(std::function<void(wpi::net::uv::Loop&, int, const std::string&)> added,
-                      std::function<void(const std::string&)> removed)
+    SystemDUsbMonitor(
+        std::function<void(wpi::net::uv::Loop&, int, const std::string&)> added,
+        std::function<void(const std::string&)> removed)
         : OnAdded{std::move(added)}, OnRemoved{std::move(removed)} {}
 
     bool Initialize(wpi::net::uv::Loop* loop);

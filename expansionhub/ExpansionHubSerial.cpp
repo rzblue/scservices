@@ -1,3 +1,7 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 #include "ExpansionHubSerial.h"
 
 #include "stdio.h"
@@ -94,7 +98,8 @@ static constexpr uint8_t CalcChecksum(std::span<const uint8_t> buffer) {
     return sum;
 }
 
-bool ExpansionHubSerial::Initialize(wpi::net::uv::Loop& loop, int fd, std::string path) {
+bool ExpansionHubSerial::Initialize(wpi::net::uv::Loop& loop, int fd,
+                                    std::string path) {
     serialFd = fd;
     serialPath = std::move(path);
     tcflush(serialFd, TCIFLUSH);
@@ -115,8 +120,9 @@ bool ExpansionHubSerial::Initialize(wpi::net::uv::Loop& loop, int fd, std::strin
     return true;
 }
 
-void ExpansionHubSerial::SetCallbacks(std::function<void(bool, bool)> doOnSendCommands,
-                  ExpansionHubNtState* store) {
+void ExpansionHubSerial::SetCallbacks(
+    std::function<void(bool, bool)> doOnSendCommands,
+    ExpansionHubNtState* store) {
     onSendCommands = std::move(doOnSendCommands), ntStore = store;
 }
 
@@ -207,7 +213,8 @@ void ExpansionHubSerial::SendEncoderResetRequest(uint8_t channel) {
                buffer);
 }
 
-void ExpansionHubSerial::SendServoConfiguration(uint8_t channel, uint16_t framePeriod) {
+void ExpansionHubSerial::SendServoConfiguration(uint8_t channel,
+                                                uint16_t framePeriod) {
     if (framePeriod <= 1) {
         return;
     }
@@ -220,7 +227,8 @@ void ExpansionHubSerial::SendServoConfiguration(uint8_t channel, uint16_t frameP
                buffer);
 }
 
-void ExpansionHubSerial::SendServoPulseWidth(uint8_t channel, uint16_t pulseWidth) {
+void ExpansionHubSerial::SendServoPulseWidth(uint8_t channel,
+                                             uint16_t pulseWidth) {
     if (pulseWidth == 0) {
         return;
     }
@@ -297,8 +305,10 @@ ExpansionHubSerial::~ExpansionHubSerial() noexcept {
     }
 }
 
-void ExpansionHubSerial::SendPacket(uint8_t destAddr, uint8_t messageNumber, uint16_t packetTypeId,
-                std::span<const uint8_t> payload, bool direct) {
+void ExpansionHubSerial::SendPacket(uint8_t destAddr, uint8_t messageNumber,
+                                    uint16_t packetTypeId,
+                                    std::span<const uint8_t> payload,
+                                    bool direct) {
     assert(payload.size() < (1024 - 11));
     uint16_t bytesToSend = 10 + payload.size() + 1;
 
@@ -376,7 +386,8 @@ void ExpansionHubSerial::Flush() {
     currentCount += count;
 }
 
-void ExpansionHubSerial::CheckForStateAdvance(MessageNumbers messageNumber, size_t dataSize) {
+void ExpansionHubSerial::CheckForStateAdvance(MessageNumbers messageNumber,
+                                              size_t dataSize) {
     outstandingMessages--;
 
     if (sendState == SendState::WaitingForPackets) {
@@ -399,7 +410,8 @@ void ExpansionHubSerial::CheckForStateAdvance(MessageNumbers messageNumber, size
     }
 }
 
-void ExpansionHubSerial::HandlePayload(std::span<const uint8_t> data, uint8_t crc) {
+void ExpansionHubSerial::HandlePayload(std::span<const uint8_t> data,
+                                       uint8_t crc) {
     if (crc != PacketCrc(data)) {
         printf("CRC failure, bus will recover\n");
         if (ntStore) {

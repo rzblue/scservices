@@ -1,3 +1,7 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 #pragma once
 
 #include <functional>
@@ -7,7 +11,8 @@
 namespace eh {
 class ReceiveStateMachine {
    public:
-    ReceiveStateMachine(std::function<void(std::span<const uint8_t>, uint8_t)> onPacket)
+    ReceiveStateMachine(
+        std::function<void(std::span<const uint8_t>, uint8_t)> onPacket)
         : _onPacket{std::move(onPacket)} {}
 
     void Reset() {

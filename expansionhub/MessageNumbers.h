@@ -1,8 +1,12 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 #pragma once
 
 enum MessageNumbers {
     MESSAGE_UNKNOWN = 0,
-    MESSAGE_DISCOVER = 0, // Must be 0
+    MESSAGE_DISCOVER = 0,  // Must be 0
     MESSAGE_FTDI_RESET_CONTROL,
     MESSAGE_QUERY_INTERFACE,
     MESSAGE_SERVO_ENABLE_0,

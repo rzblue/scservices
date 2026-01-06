@@ -1,3 +1,7 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 #pragma once
 
 #include <string>
@@ -35,7 +39,8 @@ struct PidConstants {
 
     wpi::math::PIDController pidController{0, 0, 0, Period};
     // Yes this says meters but its unitless.
-    wpi::math::SimpleMotorFeedforward<wpi::units::meter> feedForward{Ks, Kv, Ka};
+    wpi::math::SimpleMotorFeedforward<wpi::units::meter> feedForward{Ks, Kv,
+                                                                     Ka};
 
     void Initialize(const wpi::nt::NetworkTableInstance& instance,
                     const std::string& motorNum, const std::string& busIdStr,

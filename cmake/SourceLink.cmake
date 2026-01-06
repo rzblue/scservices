@@ -18,23 +18,34 @@
 include(${CMAKE_CURRENT_LIST_DIR}/GitCommands.cmake)
 
 # Warn if this is included and the compilier doesn't support source link
-if ("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
-    if ("${CMAKE_C_COMPILER_VERSION}" VERSION_GREATER_EQUAL "19.20")
+if("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
+    if("${CMAKE_C_COMPILER_VERSION}" VERSION_GREATER_EQUAL "19.20")
         # Good to go!
     elseif("${CMAKE_C_COMPILER_VERSION}" VERSION_GREATER_EQUAL "19.14")
         message(STATUS "SourceLink enabled but case insensative")
     else()
-        message(WARNING "SourceLink will not work on version of MSVC less than 19.14")
+        message(
+            WARNING
+            "SourceLink will not work on version of MSVC less than 19.14"
+        )
     endif()
 else()
-    message(WARNING "SourceLink will not work on the ${CMAKE_C_COMPILER_ID} compiler")
+    message(
+        WARNING
+        "SourceLink will not work on the ${CMAKE_C_COMPILER_ID} compiler"
+    )
 endif()
 
 # REPO_ROOT is the path to the repository where code it stored.
 #
 # SOURCE_LINK_JSON_PATH is the file to output the json
-function(source_link REPO_ROOT SOURCE_LINK_JSON_PATH SOURCE_LINK_JSON_INPUT_PATH)
-    if (NOT (IS_DIRECTORY ${REPO_ROOT}))
+function(
+    source_link
+    REPO_ROOT
+    SOURCE_LINK_JSON_PATH
+    SOURCE_LINK_JSON_INPUT_PATH
+)
+    if(NOT (IS_DIRECTORY ${REPO_ROOT}))
         message(FATAL_ERROR "\"${REPO_ROOT}\" is not a directory")
     endif()
 
@@ -49,7 +60,7 @@ function(source_link REPO_ROOT SOURCE_LINK_JSON_PATH SOURCE_LINK_JSON_INPUT_PATH
     # Also build rules for submodules
     run_git_submodule_foreach("echo $displaypath,$sha1,`git config --get remote.origin.url`" ${REPO_ROOT} SUBMODULE_INFO)
 
-    if (NOT ("${SUBMODULE_INFO}" STREQUAL ""))
+    if(NOT ("${SUBMODULE_INFO}" STREQUAL ""))
         # Turn output of new lines into a CMake list
         string(REPLACE "\r\n" ";" SUBMODULE_INFO ${SUBMODULE_INFO})
         string(REPLACE "\n" ";" SUBMODULE_INFO ${SUBMODULE_INFO})
@@ -75,12 +86,11 @@ function(source_link REPO_ROOT SOURCE_LINK_JSON_PATH SOURCE_LINK_JSON_INPUT_PATH
     string(APPEND OUTPUT "}\n")
 
     configure_file(${SOURCE_LINK_JSON_INPUT_PATH} ${SOURCE_LINK_JSON_PATH})
-
 endfunction()
 
 function(build_source_link_rule LOCAL_PATH GIT_REMOTE GIT_CURRENT_HASH OUTPUT)
     # Verify local path exists
-    if (NOT (IS_DIRECTORY ${LOCAL_PATH}))
+    if(NOT (IS_DIRECTORY ${LOCAL_PATH}))
         message(FATAL_ERROR "${LOCAL_PATH} is not a directory")
     endif()
 
@@ -92,15 +102,23 @@ function(build_source_link_rule LOCAL_PATH GIT_REMOTE GIT_CURRENT_HASH OUTPUT)
     # Verify this is a GitHub URL
     # In the future we could support other source servers but currently they
     # are not supported
-    if (NOT ("${GIT_REMOTE}" MATCHES "https://github\\.com"))
-        message(STATUS "Unable to sourcelink remote: \"${GIT_REMOTE}\". Unknown host")
+    if(NOT ("${GIT_REMOTE}" MATCHES "https://github\\.com"))
+        message(
+            STATUS
+            "Unable to sourcelink remote: \"${GIT_REMOTE}\". Unknown host"
+        )
         return()
     endif()
 
     string(REPLACE ".git" "" RAW_GIT_URL ${GIT_REMOTE})
-    string(REPLACE "github.com" "raw.githubusercontent.com" RAW_GIT_URL ${RAW_GIT_URL})
+    string(
+        REPLACE
+        "github.com"
+        "raw.githubusercontent.com"
+        RAW_GIT_URL
+        ${RAW_GIT_URL}
+    )
     string(CONCAT RAW_GIT_URL ${RAW_GIT_URL} "/${GIT_CURRENT_HASH}/*")
 
     set(${OUTPUT} "\"${LOCAL_PATH}\" : \"${RAW_GIT_URL}\"" PARENT_SCOPE)
-
 endfunction(build_source_link_rule)

@@ -2,6 +2,7 @@ import ntcore
 import wpilib
 import wpimath.units
 
+
 class ExpansionHubPidConstants:
     def __init__(self, hubNumber: int, motorNumber: int, isVelocityPid: bool):
         if hubNumber < 0 or hubNumber > 3:
@@ -12,45 +13,101 @@ class ExpansionHubPidConstants:
 
         systemServer = wpilib.SystemServer.getSystemServer()
 
-        pidType =  "velocity" if isVelocityPid else "position"
+        pidType = "velocity" if isVelocityPid else "position"
 
-        options = ntcore.PubSubOptions(sendAll=True, keepDuplicates=True, periodic=0.005)
+        options = ntcore.PubSubOptions(
+            sendAll=True, keepDuplicates=True, periodic=0.005
+        )
 
-        self.pPublisher = (systemServer
-            .getDoubleTopic("/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/pid/" + pidType + "/kp")
-            .publish(options))
+        self.pPublisher = systemServer.getDoubleTopic(
+            "/rhsp/"
+            + str(hubNumber)
+            + "/motor"
+            + str(motorNumber)
+            + "/pid/"
+            + pidType
+            + "/kp"
+        ).publish(options)
 
-        self.iPublisher = (systemServer
-            .getDoubleTopic("/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/pid/" + pidType + "/ki")
-            .publish(options))
+        self.iPublisher = systemServer.getDoubleTopic(
+            "/rhsp/"
+            + str(hubNumber)
+            + "/motor"
+            + str(motorNumber)
+            + "/pid/"
+            + pidType
+            + "/ki"
+        ).publish(options)
 
-        self.dPublisher = (systemServer
-            .getDoubleTopic("/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/pid/" + pidType + "/kd")
-            .publish(options))
+        self.dPublisher = systemServer.getDoubleTopic(
+            "/rhsp/"
+            + str(hubNumber)
+            + "/motor"
+            + str(motorNumber)
+            + "/pid/"
+            + pidType
+            + "/kd"
+        ).publish(options)
 
-        self.aPublisher = (systemServer
-            .getDoubleTopic("/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/pid/" + pidType + "/ka")
-            .publish(options))
+        self.aPublisher = systemServer.getDoubleTopic(
+            "/rhsp/"
+            + str(hubNumber)
+            + "/motor"
+            + str(motorNumber)
+            + "/pid/"
+            + pidType
+            + "/ka"
+        ).publish(options)
 
-        self.vPublisher = (systemServer
-            .getDoubleTopic("/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/pid/" + pidType + "/kv")
-            .publish(options))
+        self.vPublisher = systemServer.getDoubleTopic(
+            "/rhsp/"
+            + str(hubNumber)
+            + "/motor"
+            + str(motorNumber)
+            + "/pid/"
+            + pidType
+            + "/kv"
+        ).publish(options)
 
-        self.sPublisher = (systemServer
-            .getDoubleTopic("/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/pid/" + pidType + "/ks")
-            .publish(options))
+        self.sPublisher = systemServer.getDoubleTopic(
+            "/rhsp/"
+            + str(hubNumber)
+            + "/motor"
+            + str(motorNumber)
+            + "/pid/"
+            + pidType
+            + "/ks"
+        ).publish(options)
 
-        self.continuousPublisher = (systemServer
-            .getBooleanTopic("/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/pid/" + pidType + "/continuous")
-            .publish(options))
+        self.continuousPublisher = systemServer.getBooleanTopic(
+            "/rhsp/"
+            + str(hubNumber)
+            + "/motor"
+            + str(motorNumber)
+            + "/pid/"
+            + pidType
+            + "/continuous"
+        ).publish(options)
 
-        self.continuousMinimumPublisher = (systemServer
-            .getDoubleTopic("/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/pid/" + pidType + "/continuousMinimum")
-            .publish(options))
+        self.continuousMinimumPublisher = systemServer.getDoubleTopic(
+            "/rhsp/"
+            + str(hubNumber)
+            + "/motor"
+            + str(motorNumber)
+            + "/pid/"
+            + pidType
+            + "/continuousMinimum"
+        ).publish(options)
 
-        self.continuousMaximumPublisher = (systemServer
-            .getDoubleTopic("/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/pid/" + pidType + "/continousMaximum")
-            .publish(options))
+        self.continuousMaximumPublisher = systemServer.getDoubleTopic(
+            "/rhsp/"
+            + str(hubNumber)
+            + "/motor"
+            + str(motorNumber)
+            + "/pid/"
+            + pidType
+            + "/continousMaximum"
+        ).publish(options)
 
     def setPID(self, p: float, i: float, d: float):
         self.pPublisher.set(p)
@@ -70,6 +127,7 @@ class ExpansionHubPidConstants:
     def disableContinousInput(self):
         self.continuousPublisher.set(False)
 
+
 class ExpansionHubMotor:
     def __init__(self, hubNumber: int, motorNumber: int):
         if hubNumber < 0 or hubNumber > 3:
@@ -80,53 +138,61 @@ class ExpansionHubMotor:
 
         systemServer = wpilib.SystemServer.getSystemServer()
 
-        options = ntcore.PubSubOptions(sendAll=True, keepDuplicates=True, periodic=0.005)
+        options = ntcore.PubSubOptions(
+            sendAll=True, keepDuplicates=True, periodic=0.005
+        )
 
-        self.encoderSubscriber = (systemServer
-            .getDoubleTopic("/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/encoder")
-            .subscribe(0, options))
-        self.encoderVelocitySubscriber = (systemServer
-            .getDoubleTopic("/rhsp/" + str(hubNumber) + "/motor" +
-                str(motorNumber) + "/encoderVelocity")
-            .subscribe(0, options))
-        self.currentSubscriber = (systemServer
-            .getDoubleTopic("/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/current")
-            .subscribe(0, options))
+        self.encoderSubscriber = systemServer.getDoubleTopic(
+            "/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/encoder"
+        ).subscribe(0, options)
+        self.encoderVelocitySubscriber = systemServer.getDoubleTopic(
+            "/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/encoderVelocity"
+        ).subscribe(0, options)
+        self.currentSubscriber = systemServer.getDoubleTopic(
+            "/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/current"
+        ).subscribe(0, options)
 
-        self.hubConnectedSubscriber = systemServer.getBooleanTopic("/rhsp/" + str(hubNumber) + "/connected").subscribe(False)
+        self.hubConnectedSubscriber = systemServer.getBooleanTopic(
+            "/rhsp/" + str(hubNumber) + "/connected"
+        ).subscribe(False)
 
-        self.setpointPublisher = (systemServer
-            .getDoubleTopic("/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/setpoint")
-            .publish(options))
+        self.setpointPublisher = systemServer.getDoubleTopic(
+            "/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/setpoint"
+        ).publish(options)
 
-        self.distancePerCountPublisher = (systemServer
-            .getDoubleTopic("/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/distancePerCount")
-            .publish(options))
+        self.distancePerCountPublisher = systemServer.getDoubleTopic(
+            "/rhsp/"
+            + str(hubNumber)
+            + "/motor"
+            + str(motorNumber)
+            + "/distancePerCount"
+        ).publish(options)
 
-        self.floatOn0Publisher = (systemServer
-            .getBooleanTopic("/rhsp/" + str(hubNumber) + "/motor" +
-                str(motorNumber) + "/floatOn0")
-            .publish(options))
-        self.enabledPublisher = (systemServer
-            .getBooleanTopic("/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/enabled")
-            .publish(options))
+        self.floatOn0Publisher = systemServer.getBooleanTopic(
+            "/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/floatOn0"
+        ).publish(options)
+        self.enabledPublisher = systemServer.getBooleanTopic(
+            "/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/enabled"
+        ).publish(options)
 
-        self.modePublisher = (systemServer
-            .getIntegerTopic("/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/mode")
-            .publish(options))
+        self.modePublisher = systemServer.getIntegerTopic(
+            "/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/mode"
+        ).publish(options)
 
-        self.reversedPublisher = (systemServer
-            .getBooleanTopic("/rhsp/" + str(hubNumber) + "/motor" +
-                str(motorNumber) + "/reversed")
-            .publish(options))
+        self.reversedPublisher = systemServer.getBooleanTopic(
+            "/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/reversed"
+        ).publish(options)
 
-        self.resetEncoderPublisher = (systemServer
-            .getBooleanTopic("/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) +
-                "/resetEncoder")
-            .publish(options))
+        self.resetEncoderPublisher = systemServer.getBooleanTopic(
+            "/rhsp/" + str(hubNumber) + "/motor" + str(motorNumber) + "/resetEncoder"
+        ).publish(options)
 
-        self.velocityPidConstants = ExpansionHubPidConstants(hubNumber, motorNumber, True)
-        self.positionPidConstants = ExpansionHubPidConstants(hubNumber, motorNumber, False)
+        self.velocityPidConstants = ExpansionHubPidConstants(
+            hubNumber, motorNumber, True
+        )
+        self.positionPidConstants = ExpansionHubPidConstants(
+            hubNumber, motorNumber, False
+        )
 
     def setPercentagePower(self, power: float):
         self.modePublisher.set(0)
@@ -177,6 +243,7 @@ class ExpansionHubMotor:
     def getPositionPidConstants(self) -> ExpansionHubPidConstants:
         return self.positionPidConstants
 
+
 class ExpansionHubServo:
     def __init__(self, hubNumber: int, servoNumber: int):
         if hubNumber < 0 or hubNumber > 3:
@@ -187,25 +254,29 @@ class ExpansionHubServo:
 
         systemServer = wpilib.SystemServer.getSystemServer()
 
-        options = ntcore.PubSubOptions(sendAll=True, keepDuplicates=True, periodic=0.005)
+        options = ntcore.PubSubOptions(
+            sendAll=True, keepDuplicates=True, periodic=0.005
+        )
 
-        self.hubConnectedSubscriber = systemServer.getBooleanTopic("/rhsp/" + str(hubNumber) + "/connected").subscribe(False)
+        self.hubConnectedSubscriber = systemServer.getBooleanTopic(
+            "/rhsp/" + str(hubNumber) + "/connected"
+        ).subscribe(False)
 
-        self.pulseWidthPublisher = (systemServer
-            .getIntegerTopic("/rhsp/" + str(hubNumber) + "/servo" + str(servoNumber) + "/pulseWidth")
-            .publish(options))
+        self.pulseWidthPublisher = systemServer.getIntegerTopic(
+            "/rhsp/" + str(hubNumber) + "/servo" + str(servoNumber) + "/pulseWidth"
+        ).publish(options)
 
         self.pulseWidthPublisher.set(1500)
 
-        self.framePeriodPublisher = (systemServer
-            .getIntegerTopic("/rhsp/" + str(hubNumber) + "/servo" + str(servoNumber) + "/framePeriod")
-            .publish(options))
+        self.framePeriodPublisher = systemServer.getIntegerTopic(
+            "/rhsp/" + str(hubNumber) + "/servo" + str(servoNumber) + "/framePeriod"
+        ).publish(options)
 
         self.framePeriodPublisher.set(20000)
 
-        self.enabledPublisher = (systemServer
-            .getBooleanTopic("/rhsp/" + str(hubNumber) + "/servo" + str(servoNumber) + "/enabled")
-            .publish(options))
+        self.enabledPublisher = systemServer.getBooleanTopic(
+            "/rhsp/" + str(hubNumber) + "/servo" + str(servoNumber) + "/enabled"
+        ).publish(options)
 
     def set(self, value: float):
         value = min(1.0, max(0.0, value))
@@ -229,6 +300,7 @@ class ExpansionHubServo:
     def setPulseWidth(self, pulseWidth: int):
         self.pulseWidthPublisher.set(pulseWidth)
 
+
 class ExpansionHub:
     def __init__(self, hubNumber: int):
         if hubNumber < 0 or hubNumber > 3:
@@ -238,8 +310,12 @@ class ExpansionHub:
 
         self.hubNumber = hubNumber
 
-        self.batteryVoltageSubscriber = systemServer.getDoubleTopic("/rhsp/" + str(hubNumber) + "/battery").subscribe(0)
-        self.connectedSubscriber = systemServer.getBooleanTopic("/rhsp/" + str(hubNumber) + "/connected").subscribe(False)
+        self.batteryVoltageSubscriber = systemServer.getDoubleTopic(
+            "/rhsp/" + str(hubNumber) + "/battery"
+        ).subscribe(0)
+        self.connectedSubscriber = systemServer.getBooleanTopic(
+            "/rhsp/" + str(hubNumber) + "/connected"
+        ).subscribe(False)
 
     def isConnected(self) -> bool:
         return self.connectedSubscriber.get()
