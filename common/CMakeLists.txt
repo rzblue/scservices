@@ -3,7 +3,7 @@ project(Common)
 set (SOURCES
     version.cpp
     systemd-utils.cpp
-    shutdown-signal.cpp
+    ShutdownWaiter.cpp
 )
 
 add_library(Common STATIC ${SOURCES})

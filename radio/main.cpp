@@ -1,6 +1,3 @@
-#if defined(__linux__) && defined(MRC_DAEMON_BUILD)
-#include <signal.h>
-#endif
 #include <stdio.h>
 
 #include "version.h"
@@ -17,6 +14,7 @@
 #include "wpi/util/StringExtras.hpp"
 
 #include "systemd-utils.h"
+#include "ShutdownWaiter.h"
 
 struct DataStorage {
     wpi::util::Logger logger;
@@ -33,13 +31,7 @@ int main() {
     printf("\tBuild Hash: %s\n", MRC_GetGitHash());
     printf("\tBuild Timestamp: %s\n", MRC_GetBuildTimestamp());
 
-#if defined(__linux__) && defined(MRC_DAEMON_BUILD)
-    sigset_t signal_set;
-    sigemptyset(&signal_set);
-    sigaddset(&signal_set, SIGTERM);
-    sigaddset(&signal_set, SIGINT);
-    sigprocmask(SIG_BLOCK, &signal_set, nullptr);
-#endif
+    daemon_utils::ShutdownWaiter signalWaiter;
 
     auto ntInst = wpi::nt::NetworkTableInstance::Create();
     ntInst.SetServer({"localhost"}, 6810);
@@ -63,14 +55,7 @@ int main() {
 
     systemd_utils::notify_ready();
 
-    {
-#if defined(__linux__) && defined(MRC_DAEMON_BUILD)
-        int sig = 0;
-        sigwait(&signal_set, &sig);
-#else
-        (void)getchar();
-#endif
-    }
+    signalWaiter.Wait();
 
     systemd_utils::notify_stopping();
 

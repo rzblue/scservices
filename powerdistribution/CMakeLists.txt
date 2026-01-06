@@ -7,4 +7,5 @@ target_link_libraries(PowerDistributionDaemon PRIVATE Common ntcore wpinet wpiut
 
 if (MRC_BUILD)
 target_compile_definitions(PowerDistributionDaemon PRIVATE MRC_DAEMON_BUILD)
+target_link_libraries(PowerDistributionDaemon PRIVATE systemd)
 endif()
