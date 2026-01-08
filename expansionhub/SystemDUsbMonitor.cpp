@@ -4,8 +4,7 @@
 
 #include "SystemDUsbMonitor.h"
 
-#include "stdio.h"
-
+#include <cstdio>
 #include <filesystem>
 
 using namespace eh;

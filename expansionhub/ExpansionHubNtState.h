@@ -5,6 +5,13 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
+
+#include <wpi/nt/BooleanTopic.hpp>
+#include <wpi/nt/DoubleTopic.hpp>
+#include <wpi/nt/IntegerTopic.hpp>
+#include <wpi/nt/NetworkTableInstance.hpp>
+
 #include "MotorNtState.h"
 #include "ServoNtState.h"
 

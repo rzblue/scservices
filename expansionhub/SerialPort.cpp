@@ -8,19 +8,17 @@
  *  Created on: Dec 3, 2020
  *  Author: Andrey Mihadyuk
  */
+#include "SerialPort.h"
+
+#include <errno.h>
 #include <fcntl.h>
-#include <sys/select.h>
-#include <string.h>
+#include <linux/serial.h>
+#include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
-#include <errno.h>
-#include <linux/serial.h>
-#include <asm/ioctls.h>
-#include <sys/ioctl.h>
 
-#include <stdio.h>
-
-#include "SerialPort.h"
+#include <cstdio>
+#include <cstring>
 
 int eh::OpenRhspSerialPort(const char* serialPortName) {
     struct termios termiosSettings;

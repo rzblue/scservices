@@ -4,10 +4,13 @@
 
 #pragma once
 
-#include "wpi/nt/BooleanTopic.hpp"
-#include "wpi/nt/IntegerTopic.hpp"
-#include "CachedCommand.h"
 #include <string>
+
+#include <wpi/nt/BooleanTopic.hpp>
+#include <wpi/nt/IntegerTopic.hpp>
+#include <wpi/nt/NetworkTableInstance.hpp>
+
+#include "CachedCommand.h"
 
 namespace eh {
 

@@ -6,16 +6,14 @@
 
 #include <string>
 
+#include <wpi/math/controller/PIDController.hpp>
+#include <wpi/math/controller/SimpleMotorFeedforward.hpp>
+#include <wpi/nt/BooleanTopic.hpp>
+#include <wpi/nt/DoubleTopic.hpp>
+#include <wpi/units/acceleration.hpp>
 #include <wpi/units/length.hpp>
 #include <wpi/units/velocity.hpp>
 #include <wpi/units/voltage.hpp>
-#include <wpi/units/acceleration.hpp>
-
-#include "wpi/math/controller/PIDController.hpp"
-#include "wpi/math/controller/SimpleMotorFeedforward.hpp"
-
-#include "wpi/nt/BooleanTopic.hpp"
-#include "wpi/nt/DoubleTopic.hpp"
 
 namespace eh {
 

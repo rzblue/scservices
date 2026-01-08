@@ -27,7 +27,7 @@ target_link_libraries(
 )
 target_include_directories(
     ExpansionHubDaemon
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/rhsp/include
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 if(MRC_BUILD)

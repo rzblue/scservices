@@ -5,21 +5,21 @@
 #if defined(__linux__) && defined(MRC_DAEMON_BUILD)
 #include <signal.h>
 #endif
-#include <stdio.h>
-
-#include "version.h"
-
 #include <linux/can.h>
 #include <linux/can/raw.h>
 #include <net/if.h>
 #include <sys/ioctl.h>
 
+#include <cstdint>
+#include <cstdio>
+
 #include <wpi/net/EventLoopRunner.hpp>
 #include <wpi/net/uv/Poll.hpp>
 
+#include "version.h"
+#include "wpi/nt/IntegerTopic.hpp"
 #include "wpi/nt/NetworkTableInstance.hpp"
 #include "wpi/nt/RawTopic.hpp"
-#include "wpi/nt/IntegerTopic.hpp"
 
 #define NUM_CAN_BUSES 2
 

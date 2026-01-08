@@ -5,56 +5,28 @@
 #if defined(__linux__) && defined(MRC_DAEMON_BUILD)
 #include <signal.h>
 #endif
-#include <stdio.h>
 
+#include <cstdint>
+#include <cstdio>
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "version.h"
-
-#include <linux/can.h>
-#include <linux/can/raw.h>
-#include <net/if.h>
-#include <sys/ioctl.h>
-
-#include <filesystem>
-
+#include <systemd/sd-device.h>
+#include <wpi/math/controller/PIDController.hpp>
+#include <wpi/math/controller/SimpleMotorFeedforward.hpp>
 #include <wpi/net/EventLoopRunner.hpp>
 #include <wpi/net/uv/Poll.hpp>
-#include <wpi/net/uv/FsEvent.hpp>
 #include <wpi/net/uv/Timer.hpp>
-
-#include "wpi/nt/NetworkTableInstance.hpp"
-#include "wpi/nt/RawTopic.hpp"
-
-#include "wpi/nt/IntegerTopic.hpp"
-#include "wpi/nt/DoubleTopic.hpp"
-#include "systemd/sd-device.h"
-
-#include "SerialPort.h"
-
-#include <deque>
-
-#include "wpi/nt/BooleanTopic.hpp"
-
+#include <wpi/nt/NetworkTableInstance.hpp>
 #include <wpi/util/timestamp.h>
 
-#include "ReceiveStateMachine.h"
-#include "MessageNumbers.h"
-
-#include "wpi/math/controller/PIDController.hpp"
-#include "wpi/math/controller/SimpleMotorFeedforward.hpp"
-
-#include <wpi/units/length.hpp>
-#include <wpi/units/velocity.hpp>
-#include <wpi/units/voltage.hpp>
-#include <wpi/units/acceleration.hpp>
-
+#include "EnabledState.h"
 #include "ExpansionHubNtState.h"
 #include "ExpansionHubSerial.h"
-#include "EnabledState.h"
+#include "SerialPort.h"
 #include "SystemDUsbMonitor.h"
+#include "version.h"
 
 struct ExpansionHubState {
     uint64_t lastLoop = wpi::util::Now();

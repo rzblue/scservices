@@ -4,13 +4,12 @@
 
 #include "ExpansionHubSerial.h"
 
-#include <memory>
+#include <cstdint>
+#include <cstdio>
 #include <string>
 #include <utility>
 
-#include "stdio.h"
-
-#include "wpi/util/timestamp.h"
+#include <wpi/util/timestamp.h>
 
 #define MAX_NUM_OUTSTANDING_MESSAGES 8
 

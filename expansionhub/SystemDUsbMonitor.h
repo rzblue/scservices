@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include "systemd/sd-device.h"
-#include <optional>
-#include <utility>
 #include <functional>
 #include <string>
+#include <utility>
+
+#include <systemd/sd-device.h>
 
 #define NUM_USB_BUSES 4
 

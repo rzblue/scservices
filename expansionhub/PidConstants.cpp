@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "wpi/nt/NetworkTableInstance.hpp"
+#include <wpi/nt/NetworkTableInstance.hpp>
 
 using namespace eh;
 

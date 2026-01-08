@@ -4,14 +4,17 @@
 
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <utility>
 
-#include "wpi/nt/BooleanTopic.hpp"
-#include "wpi/nt/IntegerTopic.hpp"
-#include "wpi/nt/DoubleTopic.hpp"
-#include "PidConstants.h"
+#include <wpi/nt/BooleanTopic.hpp>
+#include <wpi/nt/DoubleTopic.hpp>
+#include <wpi/nt/IntegerTopic.hpp>
+#include <wpi/nt/NetworkTableInstance.hpp>
+
 #include "CachedCommand.h"
+#include "PidConstants.h"
 
 namespace eh {
 

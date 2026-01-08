@@ -4,14 +4,16 @@
 
 #pragma once
 
+#include <cstdint>
 #include <deque>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "wpi/net/uv/Loop.hpp"
-#include "wpi/net/uv/Poll.hpp"
-#include "functional"
+#include <wpi/net/uv/Loop.hpp>
+#include <wpi/net/uv/Poll.hpp>
+
 #include "ExpansionHubNtState.h"
 #include "MessageNumbers.h"
 #include "ReceiveStateMachine.h"

@@ -5,21 +5,20 @@
 #if defined(__linux__) && defined(MRC_DAEMON_BUILD)
 #include <signal.h>
 #endif
-#include <stdio.h>
-
+#include <cstdint>
+#include <cstdio>
 #include <memory>
 
-#include "version.h"
-
 #include <wpi/net/EventLoopRunner.hpp>
-#include <wpi/net/uv/Timer.hpp>
 #include <wpi/net/uv/Tcp.hpp>
+#include <wpi/net/uv/Timer.hpp>
+
+#include "version.h"
 #include "wpi/net/HttpUtil.hpp"
 #include "wpi/net/ParallelTcpConnector.hpp"
-#include "wpi/util/Logger.hpp"
-
 #include "wpi/nt/NetworkTableInstance.hpp"
 #include "wpi/nt/StringTopic.hpp"
+#include "wpi/util/Logger.hpp"
 #include "wpi/util/StringExtras.hpp"
 
 struct DataStorage {

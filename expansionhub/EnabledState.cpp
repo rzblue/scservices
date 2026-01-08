@@ -5,10 +5,10 @@
 #include "EnabledState.h"
 
 #include <fcntl.h>
-#include <stdint.h>
-#include <thread>
+
 #include <chrono>
-#include <string.h>
+#include <cstring>
+#include <thread>
 
 #define CONTROL_DATA_PATH "/sys/kernel/can_heartbeat/controldataro"
 

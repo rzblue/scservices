@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "wpi/nt/NetworkTableInstance.hpp"
+#include <wpi/nt/NetworkTableInstance.hpp>
 
 #define PERCENTAGE_MODE 0
 #define VOLTAGE_MODE 1
