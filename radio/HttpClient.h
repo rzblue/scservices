@@ -1,6 +1,5 @@
 #pragma once
 
-#include <functional>
 #include <memory>
 #include <string>
 
@@ -10,18 +9,25 @@
 #include <wpi/net/uv/Loop.hpp>
 #include <wpi/net/uv/Tcp.hpp>
 #include <wpi/util/Logger.hpp>
+#include <wpi/util/Signal.h>
 
 class HttpClient {
 public:
-    using CompletionCallback = std::function<void(int statusCode, std::string body)>;
-    
     HttpClient(wpi::net::uv::Loop& loop, wpi::util::Logger& logger);
     ~HttpClient();
     
     // Make an HTTP GET request
-    void Get(const std::string& url, CompletionCallback callback);
+    void Get(const std::string& url);
     
     bool IsBusy() const { return m_requestPending; }
+    
+    /**
+     * Request completion signal.
+     * 
+     * The parameters to the signal are the HTTP status code and response body.
+     * A status code of 0 indicates an error occurred.
+     */
+    wpi::util::sig::Signal<int, std::string_view> completed;
     
 private:
     void OnTcpConnected(wpi::net::uv::Tcp& tcp, const wpi::net::HttpRequest& httpReq);
@@ -35,5 +41,4 @@ private:
     int m_statusCode = 0;
     bool m_requestPending = false;
     bool m_messageComplete = false;
-    CompletionCallback m_callback;
 };

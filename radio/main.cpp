@@ -53,6 +53,20 @@ int main() {
         // Create HTTP client
         instData.httpClient =
             std::make_unique<HttpClient>(loop, instData.logger);
+
+        // Connect to the completed signal
+        instData.httpClient->completed.connect([&instData](
+                                                   int statusCode,
+                                                   std::string_view body) {
+            if (statusCode >= 200 && statusCode < 300) {
+                instData.resultPublisher.Set(body);
+                printf("HTTP request successful, status: %d\\n", statusCode);
+            } else {
+                instData.resultPublisher.Set("");
+                printf("HTTP request failed with status: %d\\n", statusCode);
+            }
+        });
+
         success = startUvLoop(loop, instData);
     });
 
@@ -84,18 +98,7 @@ static void makeHttpRequest(wpi::net::uv::Loop& loop, DataStorage& instData) {
     // HTTP endpoint to poll (constant for now)
     constexpr const char* HTTP_ENDPOINT = "http://localhost:8000/status";
 
-    instData.httpClient->Get(
-        HTTP_ENDPOINT, [&instData](int statusCode, std::string body) {
-            if (statusCode >= 200 && statusCode < 300) {
-                // Success - publish the body
-                instData.resultPublisher.Set(body);
-                printf("HTTP request successful, status: %d\n", statusCode);
-            } else {
-                // Failed - clear the topic
-                instData.resultPublisher.Set("");
-                printf("HTTP request failed with status: %d\n", statusCode);
-            }
-        });
+    instData.httpClient->Get(HTTP_ENDPOINT);
 }
 
 static bool startUvLoop(wpi::net::uv::Loop& loop, DataStorage& instData) {

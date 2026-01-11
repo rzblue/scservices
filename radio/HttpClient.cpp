@@ -12,7 +12,7 @@ HttpClient::~HttpClient() {
     }
 }
 
-void HttpClient::Get(const std::string& url, CompletionCallback callback) {
+void HttpClient::Get(const std::string& url) {
     if (m_requestPending) {
         return;  // Skip if previous request still pending
     }
@@ -21,7 +21,6 @@ void HttpClient::Get(const std::string& url, CompletionCallback callback) {
     m_bodyBuffer.clear();
     m_statusCode = 0;
     m_messageComplete = false;
-    m_callback = std::move(callback);
     
     // Parse URL
     bool error = false;
@@ -30,9 +29,7 @@ void HttpClient::Get(const std::string& url, CompletionCallback callback) {
     if (error) {
         printf("Failed to parse URL: %s\n", errorMsg.c_str());
         m_requestPending = false;
-        if (m_callback) {
-            m_callback(0, "");
-        }
+        completed(0, "");
         return;
     }
     
@@ -54,9 +51,7 @@ void HttpClient::Get(const std::string& url, CompletionCallback callback) {
         m_requestPending = false;
         m_messageComplete = true;
         
-        if (m_callback) {
-            m_callback(m_statusCode, m_bodyBuffer);
-        }
+        completed(m_statusCode, m_bodyBuffer);
     });
     
     // Create TCP connector if needed
@@ -71,9 +66,7 @@ void HttpClient::Get(const std::string& url, CompletionCallback callback) {
         if (!m_tcpConnector) {
             printf("Failed to create TCP connector\n");
             m_requestPending = false;
-            if (m_callback) {
-                m_callback(0, "");
-            }
+            completed(0, "");
             return;
         }
         
@@ -126,9 +119,7 @@ void HttpClient::OnTcpConnected(wpi::net::uv::Tcp& tcp, const wpi::net::HttpRequ
                     conn->Close();
                 }
                 
-                if (m_callback) {
-                    m_callback(0, "");
-                }
+                completed(0, "");
             }
         }
     });
@@ -150,9 +141,7 @@ void HttpClient::OnTcpConnected(wpi::net::uv::Tcp& tcp, const wpi::net::HttpRequ
                 m_bodyBuffer.clear();
                 m_httpParser.reset();
                 
-                if (m_callback) {
-                    m_callback(0, "");
-                }
+                completed(0, "");
             }
         }
         
@@ -168,9 +157,7 @@ void HttpClient::OnTcpConnected(wpi::net::uv::Tcp& tcp, const wpi::net::HttpRequ
         m_bodyBuffer.clear();
         m_httpParser.reset();
         
-        if (m_callback) {
-            m_callback(0, "");
-        }
+        completed(0, "");
         
         if (m_tcpConnector) {
             m_tcpConnector->Disconnected();
