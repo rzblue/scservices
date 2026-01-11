@@ -3,26 +3,23 @@
 #endif
 #include <stdio.h>
 
+#include <wpi/util/json.hpp>
+
 #include "version.h"
+#include "HttpClient.h"
 
 #include <wpi/net/EventLoopRunner.hpp>
 #include <wpi/net/uv/Timer.hpp>
-#include <wpi/net/uv/Tcp.hpp>
-#include "wpi/net/HttpUtil.hpp"
-#include "wpi/net/ParallelTcpConnector.hpp"
-#include "wpi/util/Logger.hpp"
 
 #include "wpi/nt/NetworkTableInstance.hpp"
 #include "wpi/nt/StringTopic.hpp"
-#include "wpi/util/StringExtras.hpp"
 
 struct DataStorage {
     wpi::util::Logger logger;
     wpi::nt::StringSubscriber teamSubscriber;
+    wpi::nt::StringPublisher resultPublisher;
 
-    std::shared_ptr<wpi::net::ParallelTcpConnector> tcpConnector;
-    std::weak_ptr<wpi::net::uv::Tcp> tcpConn;
-    std::optional<uint16_t> oldTeamNumber;
+    std::unique_ptr<HttpClient> httpClient;
 };
 
 static bool startUvLoop(wpi::net::uv::Loop& loop, DataStorage& instData);
@@ -40,17 +37,22 @@ int main() {
 #endif
 
     auto ntInst = wpi::nt::NetworkTableInstance::Create();
-    ntInst.SetServer({"localhost"}, 6810);
+    ntInst.SetServer({"localhost"}, 5810);
     ntInst.StartClient("RadioDaemon");
 
     DataStorage instData;
 
     instData.teamSubscriber = ntInst.GetStringTopic("/sys/team").Subscribe("");
+    instData.resultPublisher =
+        ntInst.GetStringTopic("/radio/status").PublishEx("json", {{}});
 
     wpi::net::EventLoopRunner loopRunner;
 
     bool success = false;
     loopRunner.ExecSync([&success, &instData](wpi::net::uv::Loop& loop) {
+        // Create HTTP client
+        instData.httpClient =
+            std::make_unique<HttpClient>(loop, instData.logger);
         success = startUvLoop(loop, instData);
     });
 
@@ -74,27 +76,27 @@ int main() {
     return 0;
 }
 
-// static std::optional<uint16_t> checkTeamNumber(DataStorage& instData) {
-//     auto teamStr = instData.teamSubscriber.Get();
-//     auto maybeTeam = wpi::parse_integer<uint16_t>(teamStr, 10);
-//     if (!maybeTeam.has_value()) {
-//         printf("failed to parse team number\n");
-//         return {};
-//     }
+static void makeHttpRequest(wpi::net::uv::Loop& loop, DataStorage& instData) {
+    if (!instData.httpClient || instData.httpClient->IsBusy()) {
+        return;  // Skip if no client or previous request still pending
+    }
 
-//     auto team = *maybeTeam;
+    // HTTP endpoint to poll (constant for now)
+    constexpr const char* HTTP_ENDPOINT = "http://localhost:8000/status";
 
-//     if (team > 25599) {
-//         printf("Team number too large\n");
-//         return {};
-//     }
-
-//     return team;
-// }
-
-// static void tryRequest(wpi::uv::Loop& loop, DataStorage& instData) {
-
-// }
+    instData.httpClient->Get(
+        HTTP_ENDPOINT, [&instData](int statusCode, std::string body) {
+            if (statusCode >= 200 && statusCode < 300) {
+                // Success - publish the body
+                instData.resultPublisher.Set(body);
+                printf("HTTP request successful, status: %d\n", statusCode);
+            } else {
+                // Failed - clear the topic
+                instData.resultPublisher.Set("");
+                printf("HTTP request failed with status: %d\n", statusCode);
+            }
+        });
+}
 
 static bool startUvLoop(wpi::net::uv::Loop& loop, DataStorage& instData) {
     auto timer = wpi::net::uv::Timer::Create(loop);
@@ -102,52 +104,12 @@ static bool startUvLoop(wpi::net::uv::Loop& loop, DataStorage& instData) {
         return false;
     }
 
-    // instData.tcpConnector = wpi::net::ParallelTcpConnector::Create(
-    //     loop, wpi::net::uv::Timer::Time{2000}, instData.logger,
-    //     [](wpi::net::uv::Tcp& tcp) {
-    //     },
-    //     true);
+    // Set up timer to poll every 5 seconds
+    timer->timeout.connect(
+        [&loop, &instData] { makeHttpRequest(loop, instData); });
 
-    // if (!instData.tcpConnector) {
-    //     return false;
-    // }
-
-    // timer->timeout.connect([&loop, &instData] {
-    //     auto maybeTeam = checkTeamNumber(instData);
-    //     if (!maybeTeam.has_value()) {
-    //         instData.oldTeamNumber = maybeTeam;
-    //         return;
-    //     }
-
-    //     if (maybeTeam != instData.oldTeamNumber) {
-    //         // New team number.
-    //         instData.oldTeamNumber = maybeTeam;
-    //         // Restart TCP if it exists.
-
-    //         std::array<std::pair<std::string, unsigned int>, 1> servers;
-    //         servers[0] = {"localhost", 80};
-
-    //         instData.tcpConnector->SetServers(servers);
-    //         instData.tcpConnector->Disconnected();
-
-    //         return;
-    //     }
-
-    //     tryRequest(loop, instData);
-
-    //     //    fmt::format("10.{}.{}.1", static_cast<int>(team / 100),
-    //     //                static_cast<int>(team % 100));
-
-    //     //     auto tcp = wpi::uv::Tcp::Create(loop, 0);
-    //     //     if (!tcp) {
-    //     //         printf("Failed to allocate tcp\n");
-    //     //         return;
-    //     //     }
-
-    //     //     tcp->Reuse
-    // });
-
-    // timer->Start(wpi::uv::Timer::Time{100}, wpi::uv::Timer::Time{3000});
+    // Start timer: 0ms initial delay, 5000ms (5 second) repeat interval
+    timer->Start(wpi::net::uv::Timer::Time{0}, wpi::net::uv::Timer::Time{5000});
 
     return true;
 }
