@@ -1,6 +1,6 @@
 project(RadioDaemon)
 
-add_executable(RadioDaemon main.cpp HttpClient.cpp)
+add_executable(RadioDaemon main.cpp HttpClient.cpp RadioDataPublisher.cpp)
 target_compile_features(RadioDaemon PRIVATE cxx_std_20)
 wpilib_target_warnings(RadioDaemon)
 target_link_libraries(RadioDaemon PRIVATE Common ntcore wpinet wpiutil)

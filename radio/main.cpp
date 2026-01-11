@@ -13,11 +13,14 @@
 
 #include "wpi/nt/NetworkTableInstance.hpp"
 #include "wpi/nt/StringTopic.hpp"
+#include "RadioDataPublisher.hpp"
+#include "wpi/util/StringExtras.hpp"
 
 struct DataStorage {
     wpi::util::Logger logger;
     wpi::nt::StringSubscriber teamSubscriber;
     wpi::nt::StringPublisher resultPublisher;
+    RadioDataPublisher dataPublisher;
 
     std::unique_ptr<HttpClient> httpClient;
 };
@@ -45,27 +48,30 @@ int main() {
     instData.teamSubscriber = ntInst.GetStringTopic("/sys/team").Subscribe("");
     instData.resultPublisher =
         ntInst.GetStringTopic("/radio/status").PublishEx("json", {{}});
-
+    instData.dataPublisher = RadioDataPublisher(ntInst);
     wpi::net::EventLoopRunner loopRunner;
 
     bool success = false;
+
     loopRunner.ExecSync([&success, &instData](wpi::net::uv::Loop& loop) {
-        // Create HTTP client
         instData.httpClient =
             std::make_unique<HttpClient>(loop, instData.logger);
 
-        // Connect to the completed signal
-        instData.httpClient->completed.connect([&instData](
-                                                   int statusCode,
-                                                   std::string_view body) {
-            if (statusCode >= 200 && statusCode < 300) {
-                instData.resultPublisher.Set(body);
-                printf("HTTP request successful, status: %d\\n", statusCode);
-            } else {
-                instData.resultPublisher.Set("");
-                printf("HTTP request failed with status: %d\\n", statusCode);
-            }
-        });
+        instData.httpClient->completed.connect(
+            [&instData](int statusCode, std::string_view body) {
+                printf("HTTP request completed with status code: %d\n",
+                       statusCode);
+                if (statusCode >= 200 && statusCode < 300) {
+                    instData.resultPublisher.Set(body);
+                    instData.dataPublisher.PublishJson(body);
+                    printf("HTTP request successful, status: %d\n", statusCode);
+                } else {
+                    instData.resultPublisher.Set("");
+                    instData.dataPublisher.PublishJson("");
+                    printf("HTTP request failed with status: %d\n", statusCode);
+                }
+                std::fflush(stdout);
+            });
 
         success = startUvLoop(loop, instData);
     });
@@ -90,15 +96,24 @@ int main() {
     return 0;
 }
 
+static std::string makeRadioStatusURL(int teamNumber) {
+    int te = (teamNumber / 10) % 100;
+    int am = teamNumber % 10;
+    return fmt::format("http://10.{}.{}.1/status", te, am);
+}
+
 static void makeHttpRequest(wpi::net::uv::Loop& loop, DataStorage& instData) {
     if (!instData.httpClient || instData.httpClient->IsBusy()) {
         return;  // Skip if no client or previous request still pending
     }
 
-    // HTTP endpoint to poll (constant for now)
-    constexpr const char* HTTP_ENDPOINT = "http://localhost:8000/status";
-
-    instData.httpClient->Get(HTTP_ENDPOINT);
+    auto teamNumber =
+        wpi::util::parse_integer<int>(instData.teamSubscriber.Get(), 10);
+    if (teamNumber) {
+        instData.httpClient->Get(makeRadioStatusURL(teamNumber.value()));
+    } else {
+        printf("Invalid team number, skipping HTTP request\n");
+    }
 }
 
 static bool startUvLoop(wpi::net::uv::Loop& loop, DataStorage& instData) {
