@@ -15,6 +15,10 @@ add_executable(ExpansionHubDaemon
 
 find_library(SYSTEMD REQUIRED NAMES systemd libsystemd.so.0)
 message(STATUS "Found libsystemd: ${SYSTEMD}")
+check_include_file("systemd/sd-device.h" HAVE_SYSTEMD_SD_DEVICE_H)
+if (NOT HAVE_SYSTEMD_SD_DEVICE_H)
+    message(FATAL_ERROR "systemd/sd-device.h not found")
+endif()
 
 target_compile_features(ExpansionHubDaemon PRIVATE cxx_std_20)
 target_compile_features(ExpansionHubDaemon PRIVATE c_std_17)
